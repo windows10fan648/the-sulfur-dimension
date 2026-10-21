@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "sulfur_dimension:acid_water_bucket"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Handle with Care"
+    },
+    "description": {
+      "text": "Carry a bucket of acid water."
+    },
+    "icon": {
+      "id": "sulfur_dimension:acid_water_bucket"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

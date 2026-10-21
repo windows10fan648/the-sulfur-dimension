@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "sulfur_dimension:block/sulfur_portal_ew"
+    },
+    "axis=z": {
+      "model": "sulfur_dimension:block/sulfur_portal_ns"
+    },
+    "axis=y": {
+      "model": "sulfur_dimension:block/sulfur_portal_ew"
+    }
+  }
+}

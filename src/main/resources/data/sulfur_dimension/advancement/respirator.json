@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "sulfur_dimension:respirator_helmet"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Breathe Easy"
+    },
+    "description": {
+      "text": "Prepare a Respirator Helmet."
+    },
+    "icon": {
+      "id": "sulfur_dimension:respirator_helmet"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

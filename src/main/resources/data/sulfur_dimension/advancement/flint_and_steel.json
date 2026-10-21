@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:flint_and_steel"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Light the Way"
+    },
+    "description": {
+      "text": "Carry Flint and Steel for the portal."
+    },
+    "icon": {
+      "id": "minecraft:flint_and_steel"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

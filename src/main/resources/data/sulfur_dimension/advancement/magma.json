@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:magma_block"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Hot Foundation"
+    },
+    "description": {
+      "text": "Collect a magma block from a sulfur spring."
+    },
+    "icon": {
+      "id": "minecraft:magma_block"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

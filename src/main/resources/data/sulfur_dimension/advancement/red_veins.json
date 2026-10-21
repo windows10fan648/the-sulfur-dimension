@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:cinnabar"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Red Veins"
+    },
+    "description": {
+      "text": "Collect cinnabar from the sulfur caves."
+    },
+    "icon": {
+      "id": "minecraft:cinnabar"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

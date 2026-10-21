@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:polished_sulfur"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "Polished Discovery"
+    },
+    "description": {
+      "text": "Collect polished sulfur."
+    },
+    "icon": {
+      "id": "minecraft:polished_sulfur"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

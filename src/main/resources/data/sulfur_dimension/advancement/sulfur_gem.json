@@ -1,0 +1,36 @@
+{
+  "parent": "sulfur_dimension:what_is_this_place",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "sulfur_dimension:sulfur_gem"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": {
+      "text": "A Little Sparkle"
+    },
+    "description": {
+      "text": "Collect a Sulfur Gem."
+    },
+    "icon": {
+      "id": "sulfur_dimension:sulfur_gem"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
