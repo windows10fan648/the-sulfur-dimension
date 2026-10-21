@@ -16,6 +16,8 @@ import net.minecraft.world.phys.Vec3;
 
 /** Custom yellow-green portal interior connecting the Overworld and Sulfur Dimension. */
 public final class SulfurPortalBlock extends Block {
+    private static final int SEARCH_RADIUS = 96;
+
     public SulfurPortalBlock(BlockBehaviour.Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.AXIS, net.minecraft.core.Direction.Axis.X));
@@ -33,44 +35,35 @@ public final class SulfurPortalBlock extends Block {
             boolean returningToOverworld = source.dimension().equals(SulfurDimension.SULFUR_WORLD);
             ServerLevel destination = source.getServer().getLevel(returningToOverworld ? Level.OVERWORLD : SulfurDimension.SULFUR_WORLD);
             if (destination != null) {
-                BlockPos surface = findSurface(destination);
-                BlockPos spawn = surface.above();
-                ensurePairedPortal(destination, spawn);
+                BlockPos landing = findSurface(destination);
+                ensurePairedPortal(destination, landing);
                 TeleportTransition transition = new TeleportTransition(
                         destination,
-                        new Vec3(spawn.getX() + 0.5, spawn.getY() + 1.0, spawn.getZ() + 0.5),
+                        new Vec3(landing.getX() + 0.5, landing.getY() + 1.0, landing.getZ() + 0.5),
                         Vec3.ZERO,
-                        entity.getYRot(),
-                        entity.getXRot(),
-                        TeleportTransition.DO_NOTHING);
+                        entity.getYRot(), entity.getXRot(), TeleportTransition.DO_NOTHING);
                 Entity teleported = entity.teleport(transition);
-                if (teleported != null) {
-                    teleported.setPortalCooldown(80);
-                }
+                if (teleported != null) teleported.setPortalCooldown(80);
             }
         }
         super.entityInside(state, level, pos, entity, effects, suffocates);
     }
 
-    private static void ensurePairedPortal(ServerLevel level, BlockPos center) {
-        // A standard 4x5 frame in the X/Y plane, with the portal axis along Z.
-        BlockPos origin = center.offset(-1, -1, 0);
+    private static void ensurePairedPortal(ServerLevel level, BlockPos landing) {
+        BlockPos origin = landing.offset(-1, -1, 0);
         ensureLandingPlatform(level, origin);
         for (int w = 0; w < 4; w++) {
             for (int h = 0; h < 5; h++) {
                 BlockPos target = origin.offset(w, h, 0);
                 boolean frame = w == 0 || w == 3 || h == 0 || h == 4;
-                if (frame) {
-                    level.setBlockAndUpdate(target, Blocks.SULFUR.defaultBlockState());
-                } else {
-                    level.setBlockAndUpdate(target, SulfurDimension.SULFUR_PORTAL.defaultBlockState()
-                            .setValue(BlockStateProperties.AXIS, net.minecraft.core.Direction.Axis.Z));
-                }
+                BlockState state = frame ? Blocks.SULFUR.defaultBlockState()
+                        : SulfurDimension.SULFUR_PORTAL.defaultBlockState().setValue(BlockStateProperties.AXIS, net.minecraft.core.Direction.Axis.Z);
+                // Suppress neighbor-shape cascades: this is a fixed, validated landing structure.
+                level.setBlock(target, state, 2);
             }
         }
     }
 
-    /** Gives a liquid fallback solid footing instead of leaving the portal over open water. */
     private static void ensureLandingPlatform(ServerLevel level, BlockPos origin) {
         int floorY = origin.getY() - 1;
         for (int x = origin.getX() - 2; x <= origin.getX() + 5; x++) {
@@ -78,72 +71,44 @@ public final class SulfurPortalBlock extends Block {
                 BlockPos floor = new BlockPos(x, floorY, z);
                 BlockState state = level.getBlockState(floor);
                 if (state.isAir() || !state.getFluidState().isEmpty() || state.is(SulfurDimension.ACID_WATER)) {
-                    level.setBlockAndUpdate(floor, Blocks.SULFUR.defaultBlockState());
+                    level.setBlock(floor, Blocks.SULFUR.defaultBlockState(), 2);
                 }
             }
         }
     }
 
+    /** Prefer dry, sky-exposed land near the origin; use heightmaps rather than scanning every Y block. */
     private static BlockPos findSurface(ServerLevel level) {
-        int minY = level.getMinY();
-        int maxY = level.getMaxY();
-        BlockPos best = null;
-        for (int radius = 0; radius <= 128 && best == null; radius += 4) {
-            for (int x = -radius; x <= radius; x += radius == 0 ? 1 : 4) {
-                for (int z = -radius; z <= radius; z += radius == 0 ? 1 : 4) {
-                    int baseY = findSolidSurfaceY(level, x, z, minY, maxY);
-                    if (baseY > minY + 2 && (best == null || baseY > best.getY())) {
-                        best = new BlockPos(x, baseY, z);
+        int centerX = 0;
+        int centerZ = 0;
+        for (int radius = 0; radius <= SEARCH_RADIUS; radius += 8) {
+            for (int dx = -radius; dx <= radius; dx += 8) {
+                for (int dz = -radius; dz <= radius; dz += 8) {
+                    if (radius != 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
+                    int x = centerX + dx;
+                    int z = centerZ + dz;
+                    int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    BlockPos ground = new BlockPos(x, y - 1, z);
+                    BlockState floor = level.getBlockState(ground);
+                    if (!floor.isAir() && floor.getFluidState().isEmpty() && !floor.is(SulfurDimension.ACID_WATER)
+                            && clearLandingSpace(level, x, y, z)) {
+                        return new BlockPos(x, y, z);
                     }
                 }
             }
         }
-        if (best != null) {
-            return best;
-        }
-        BlockPos aboveLiquid = findAirAboveLiquid(level, minY, maxY);
-        return aboveLiquid != null ? aboveLiquid : new BlockPos(0, minY + 64, 0);
+        // Guaranteed dry fallback for unusual custom worldgen with no accessible land nearby.
+        BlockPos fallback = new BlockPos(centerX, level.getMinY() + 64, centerZ);
+        for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++)
+            level.setBlock(fallback.offset(dx, -1, dz), Blocks.SULFUR.defaultBlockState(), 2);
+        return fallback;
     }
 
-    /** Returns the first air block above the highest ordinary solid block in a column. */
-    private static int findSolidSurfaceY(ServerLevel level, int x, int z, int minY, int maxY) {
-        for (int y = maxY - 1; y >= minY + 1; y--) {
-            BlockPos pos = new BlockPos(x, y, z);
-            BlockState state = level.getBlockState(pos);
-            if (!state.isAir()
-                    && state.getFluidState().isEmpty()
-                    && !state.is(SulfurDimension.ACID_WATER)
-                    && !state.is(Blocks.BEDROCK)
-                    && !state.getCollisionShape(level, pos).isEmpty()
-                    && isDryPortalClear(level, x, z, y + 1, maxY)
-                    && level.canSeeSkyFromBelowWater(new BlockPos(x, y + 1, z))) {
-                return y + 1;
-            }
-        }
-        return minY;
-    }
-
-    private static boolean isDryPortalClear(ServerLevel level, int x, int z, int startY, int maxY) {
-        for (int y = startY; y < Math.min(startY + 4, maxY); y++) {
-            BlockPos pos = new BlockPos(x, y, z);
-            BlockState state = level.getBlockState(pos);
-            if (!state.isAir() || !state.getFluidState().isEmpty() || state.is(SulfurDimension.ACID_WATER)) {
-                return false;
-            }
+    private static boolean clearLandingSpace(ServerLevel level, int x, int y, int z) {
+        for (int dy = 0; dy < 3; dy++) {
+            BlockState state = level.getBlockState(new BlockPos(x, y + dy, z));
+            if (!state.isAir() || !state.getFluidState().isEmpty()) return false;
         }
         return true;
-    }
-
-    /** If the dimension is mostly liquid, place the portal in the first dry air column above a liquid surface. */
-    private static BlockPos findAirAboveLiquid(ServerLevel level, int minY, int maxY) {
-        for (int y = minY + 1; y < maxY - 5; y++) {
-            BlockState below = level.getBlockState(new BlockPos(0, y, 0));
-            if ((!below.getFluidState().isEmpty() || below.is(SulfurDimension.ACID_WATER))
-                    && isDryPortalClear(level, 0, 0, y + 1, maxY)
-                    && level.canSeeSkyFromBelowWater(new BlockPos(0, y + 1, 0))) {
-                return new BlockPos(0, y + 1, 0);
-            }
-        }
-        return null;
     }
 }

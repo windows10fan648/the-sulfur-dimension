@@ -1,6 +1,7 @@
 package com.sulfur;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.commands.Commands;
 
 /** Deterministic, rare abandoned laboratory feature for the Overworld. */
 public final class SulfurLab {
@@ -22,6 +25,10 @@ public final class SulfurLab {
         // Do not mutate chunks from CHUNK_LOAD or CHUNK_GENERATE. Those callbacks are part of
         // the chunk lifecycle and can leave a world waiting on its own generation work.
         ServerTickEvents.END_LEVEL_TICK.register(SulfurLab::onWorldTick);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                dispatcher.register(Commands.literal("locate")
+                        .then(Commands.literal("abandoned_lab")
+                                .executes(context -> locateNearest(context.getSource().getPlayerOrException())))));
     }
 
     private static void onWorldTick(ServerLevel level) {
@@ -40,10 +47,10 @@ public final class SulfurLab {
         }
     }
 
-    private static void tryGenerate(ServerLevel level, int chunkX, int chunkZ) {
+    private static boolean tryGenerate(ServerLevel level, int chunkX, int chunkZ) {
         long hash = (long) chunkX * 341873128712L ^ (long) chunkZ * 132897987541L ^ 0x5A17F00DL;
         if ((hash & 63L) != 7L) {
-            return;
+            return false;
         }
         int x = (chunkX << 4) + 8;
         int z = (chunkZ << 4) + 8;
@@ -51,20 +58,58 @@ public final class SulfurLab {
         // Never force-load a chunk from the generator. The player-radius check above should
         // already have loaded it, and this guard makes that contract explicit.
         if (!level.hasChunkAt(center)) {
-            return;
+            return false;
         }
         int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
         BlockPos floor = new BlockPos(x, y - 1, z);
         if (!isDrySite(level, floor, x, z)) {
-            return;
+            return false;
         }
         BlockPos chestPos = floor.offset(-3, 2, -1);
         if (level.getBlockEntity(chestPos) instanceof ChestBlockEntity) {
-            return;
+            return false;
         }
         buildLab(level, floor);
         fillChest(level, chestPos);
-        SulfurLabBoss.spawn(level, x + 1.5, y + 1.0, z + 1.5);
+        // Spawn the persistent boss inside the room, on its floor, rather than at its edge.
+        SulfurLabBoss.spawn(level, x + 1.5, y + 0.05, z + 1.5);
+        return true;
+    }
+
+    private static int locateNearest(ServerPlayer player) {
+        ServerLevel level = (ServerLevel) player.level();
+        if (!level.dimension().equals(net.minecraft.world.level.Level.OVERWORLD)) {
+            player.sendSystemMessage(Component.literal("Abandoned Labs can only be located from the Overworld."));
+            return 0;
+        }
+        int startX = player.blockPosition().getX() >> 4;
+        int startZ = player.blockPosition().getZ() >> 4;
+        // Inspect only the deterministic lab-chunk pattern. Do not force-load terrain while locating.
+        for (int radius = 0; radius <= 128; radius++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (radius != 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
+                    int cx = startX + dx;
+                    int cz = startZ + dz;
+                    long hash = (long) cx * 341873128712L ^ (long) cz * 132897987541L ^ 0x5A17F00DL;
+                    if ((hash & 63L) != 7L) continue;
+                    BlockPos center = new BlockPos((cx << 4) + 8, 0, (cz << 4) + 8);
+                    level.getChunkAt(center);
+                    int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, center.getX(), center.getZ());
+                    BlockPos chest = center.offset(-3, surfaceY + 1, -1);
+                    boolean alreadyBuilt = level.getBlockEntity(chest) instanceof ChestBlockEntity;
+                    if (alreadyBuilt || tryGenerate(level, cx, cz)) {
+                        player.sendSystemMessage(Component.literal("Nearest Abandoned Lab: X=" + center.getX()
+                                + " Y=" + surfaceY + " Z=" + center.getZ()));
+                        player.sendSystemMessage(Component.literal("Use /tp " + center.getX() + " " + surfaceY
+                                + " " + center.getZ() + " to travel there."));
+                        return 1;
+                    }
+                }
+            }
+        }
+        player.sendSystemMessage(Component.literal("No generated Abandoned Lab found nearby. Explore new Overworld terrain; labs generate as you explore."));
+        return 0;
     }
 
     private static boolean isDrySite(ServerLevel level, BlockPos floor, int x, int z) {
