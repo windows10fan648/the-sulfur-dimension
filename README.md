@@ -27,7 +27,7 @@ The environmental nausea hook uses the dimension key and respirator head slot. D
 
 ## Vanilla sulfur integration
 
-The dimension intentionally points its fixed biome source at `minecraft:sulfur_caves`. This reuses the official 26.3 `minecraft:sulfur_cube` mob and the vanilla sulfur/cinnabar sets, sulfur pools, rooted sulfur springs, sulfur spikes, and generation bands. The mod no longer registers a duplicate Sulfur Slime or duplicate sulfur/cinnabar blocks.
+The dimension uses a private copy of the official Sulfur Caves biome and its own noise settings. This preserves the vanilla `minecraft:sulfur_cube`, sulfur pools, rooted sulfur springs, sulfur spikes, and sulfur/cinnabar generation bands while preventing Overworld stone, dirt, and ore features from appearing in this dimension. The vanilla Overworld biome and generator settings are unchanged. The mod no longer registers a duplicate Sulfur Slime or duplicate sulfur/cinnabar blocks.
 
 Official references: [Chaos Cubed Drop](https://www.minecraft.net/en-us/updates/chaos-cubed-drop) and [Minecraft 26.2 Snapshot 1](https://www.minecraft.net/en-us/article/minecraft-26-2-snapshot-1).
 

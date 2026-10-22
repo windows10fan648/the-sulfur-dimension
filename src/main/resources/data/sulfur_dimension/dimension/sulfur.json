@@ -2,10 +2,10 @@
   "type": "sulfur_dimension:sulfur_type",
   "generator": {
     "type": "minecraft:noise",
-    "settings": "minecraft:overworld",
+    "settings": "sulfur_dimension:sulfur",
     "biome_source": {
       "type": "minecraft:fixed",
-      "biome": "minecraft:sulfur_caves"
+      "biome": "sulfur_dimension:sulfur_caves"
     }
   }
 }
