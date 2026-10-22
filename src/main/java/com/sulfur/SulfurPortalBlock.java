@@ -77,7 +77,7 @@ public final class SulfurPortalBlock extends Block {
         }
     }
 
-    /** Prefer dry, sky-exposed land near the origin; use heightmaps rather than scanning every Y block. */
+    /** Prefer dry, sky-exposed land near the origin; never treat a cave roof as the surface. */
     private static BlockPos findSurface(ServerLevel level) {
         int centerX = 0;
         int centerZ = 0;
@@ -87,10 +87,13 @@ public final class SulfurPortalBlock extends Block {
                     if (radius != 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
                     int x = centerX + dx;
                     int z = centerZ + dz;
-                    int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    // MOTION_BLOCKING_NO_LEAVES can report the top of an underground cave.
+                    // WORLD_SURFACE points at the actual topmost terrain instead.
+                    int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
                     BlockPos ground = new BlockPos(x, y - 1, z);
                     BlockState floor = level.getBlockState(ground);
                     if (!floor.isAir() && floor.getFluidState().isEmpty() && !floor.is(SulfurDimension.ACID_WATER)
+                            && level.canSeeSkyFromBelowWater(new BlockPos(x, y, z))
                             && clearLandingSpace(level, x, y, z)) {
                         return new BlockPos(x, y, z);
                     }
@@ -98,9 +101,16 @@ public final class SulfurPortalBlock extends Block {
             }
         }
         // Guaranteed dry fallback for unusual custom worldgen with no accessible land nearby.
-        BlockPos fallback = new BlockPos(centerX, level.getMinY() + 64, centerZ);
-        for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++)
-            level.setBlock(fallback.offset(dx, -1, dz), Blocks.SULFUR.defaultBlockState(), 2);
+        // Last resort: build a dry, open-air platform near the top of the build range.
+        BlockPos fallback = new BlockPos(centerX, level.getMaxY() - 16, centerZ);
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                level.setBlock(fallback.offset(dx, -1, dz), Blocks.SULFUR.defaultBlockState(), 2);
+                for (int dy = 0; dy < 3; dy++) {
+                    level.setBlock(fallback.offset(dx, dy, dz), Blocks.AIR.defaultBlockState(), 2);
+                }
+            }
+        }
         return fallback;
     }
 
