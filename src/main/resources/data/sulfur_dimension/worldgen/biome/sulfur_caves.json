@@ -112,6 +112,7 @@
     [],
     [],
     [
+      "sulfur_dimension:sulfur_gem_ore",
       "minecraft:underwater_magma",
       "minecraft:disk_sand",
       "minecraft:disk_clay",

@@ -80,6 +80,13 @@ public final class SulfurDimension implements ModInitializer {
                     .strength(-1.0f)
                     .sound(SoundType.GLASS)
                     .lightLevel(state -> 11)));
+    public static final Block SULFUR_GEM_ORE = registerBlock("sulfur_gem_ore", new Block(
+            BlockBehaviour.Properties.of()
+                    .setId(blockKey("sulfur_gem_ore"))
+                    .mapColor(MapColor.COLOR_GRAY)
+                    .strength(3.0f, 3.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE)));
     public static final Item SULFUR_GEM = registerItem("sulfur_gem", new Item(itemProperties("sulfur_gem")));
     public static final Item SULFUR_FIELD_GUIDE = registerItem("sulfur_field_guide", new SulfurFieldGuideItem(itemProperties("sulfur_field_guide").stacksTo(1)));
     public static final Item ACID_WATER_BUCKET = registerItem("acid_water_bucket", new AcidWaterBucketItem(
@@ -123,6 +130,7 @@ public final class SulfurDimension implements ModInitializer {
                     output.accept(ACID_WATER);
                     output.accept(SULFUR_PORTAL);
                     output.accept(SULFUR_GEM);
+                    output.accept(SULFUR_GEM_ORE);
                     output.accept(SULFUR_FIELD_GUIDE);
                     output.accept(ACID_WATER_BUCKET);
                     output.accept(RESPIRATOR_HELMET);

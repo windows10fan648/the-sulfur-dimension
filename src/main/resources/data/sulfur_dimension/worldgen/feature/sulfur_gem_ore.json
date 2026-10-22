@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 3,
+  "targets": [
+    {
+      "state": "sulfur_dimension:sulfur_gem_ore",
+      "target": {
+        "predicate_type": "minecraft:any_of",
+        "rules": [
+          {
+            "block": "minecraft:sulfur",
+            "predicate_type": "minecraft:block_match"
+          },
+          {
+            "block": "minecraft:cinnabar",
+            "predicate_type": "minecraft:block_match"
+          }
+        ]
+      }
+    }
+  ]
+}
