@@ -82,13 +82,19 @@ public final class SulfurPortalBlock extends Block {
         int centerX = 0;
         int centerZ = 0;
         BlockPos dryFallback = null;
+        int highestSurfaceY = level.getMinY();
         for (int radius = 0; radius <= SEARCH_RADIUS; radius += 16) {
             for (int dx = -radius; dx <= radius; dx += 16) {
                 for (int dz = -radius; dz <= radius; dz += 16) {
                     if (radius != 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
                     int x = centerX + dx;
                     int z = centerZ + dz;
+                    // The destination may not have generated this chunk yet. Force generation
+                    // before consulting its heightmap, which otherwise can still report minY.
+                    level.getChunkAt(new BlockPos(x, level.getMinY(), z));
                     int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                    if (y <= level.getMinY() + 1) continue;
+                    highestSurfaceY = Math.max(highestSurfaceY, y);
                     BlockPos ground = new BlockPos(x, y - 1, z);
                     BlockState floor = level.getBlockState(ground);
                     if (!floor.isAir() && floor.getFluidState().isEmpty() && !floor.is(SulfurDimension.ACID_WATER)
@@ -105,8 +111,11 @@ public final class SulfurPortalBlock extends Block {
         // turn its landing pad into sulfur instead of dropping the player onto a distant sky platform.
         if (dryFallback != null) return makeSulfurLandingPad(level, dryFallback);
 
-        // Fully flooded or unusual custom terrain: make a solid pad at the origin's surface level.
-        BlockPos fallback = new BlockPos(centerX, level.getHeight(Heightmap.Types.WORLD_SURFACE, centerX, centerZ), centerZ);
+        // Fully flooded or unusual custom terrain: make a solid pad safely above the generated
+        // surface (and always above the bottom bedrock layers) instead of using an empty heightmap.
+        int fallbackY = Math.max(highestSurfaceY + 1, level.getMinY() + 32);
+        fallbackY = Math.min(fallbackY, level.getMaxY() - 8);
+        BlockPos fallback = new BlockPos(centerX, fallbackY, centerZ);
         return makeSulfurLandingPad(level, fallback);
     }
 
