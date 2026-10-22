@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "sulfur_dimension:acid_water",
+    "sulfur_dimension:flowing_acid_water"
+  ]
+}

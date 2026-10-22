@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "sulfur_dimension:respirator"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "sulfur_dimension:respirator"
+      }
+    ]
+  }
+}
