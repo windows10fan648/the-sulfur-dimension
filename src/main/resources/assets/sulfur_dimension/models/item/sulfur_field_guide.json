@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "sulfur_dimension:item/sulfur_gem"
+    "layer0": "sulfur_dimension:item/sulfur_field_guide"
   }
 }

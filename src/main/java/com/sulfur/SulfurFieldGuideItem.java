@@ -1,28 +1,34 @@
 package com.sulfur;
 
-import java.util.function.Consumer;
+import java.util.List;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.Item.TooltipContext;
-import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.server.network.Filterable;
+import net.minecraft.world.item.WrittenBookItem;
+import net.minecraft.world.item.component.WrittenBookContent;
 
-/** Compact in-game list of the Sulfur Dimension content and mechanics. */
-public final class SulfurFieldGuideItem extends Item {
+/** A signed vanilla written book containing practical guidance for the Sulfur Dimension. */
+public final class SulfurFieldGuideItem extends WrittenBookItem {
     public SulfurFieldGuideItem(Properties properties) {
-        super(properties);
+        super(properties.component(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(
+                Filterable.passThrough("The Sulfur Field Guide"),
+                "The Sulfur Dimension",
+                0,
+                List.of(
+                        page("THE SULFUR FIELD GUIDE\n\nA traveler's introduction to the Sulfur Dimension, its hazards, and its strange life."),
+                        page("OPENING A PORTAL\n\nBuild a sulfur-block frame 4 blocks wide and 5 blocks tall. Leave a 2-by-3 opening. Light it with Flint and Steel, then step inside."),
+                        page("TERRAIN\n\nSulfur and cinnabar shape the land. Look for sulfur pools, springs, spikes, and caves. The dimension's terrain is unlike the Overworld."),
+                        page("HAZARDS\n\nAcid water is dangerous. Avoid swimming in it. Sulfur gas can harm the unprotected. Wear a Respirator Helmet while exploring hazardous areas."),
+                        page("CREATURES\n\nSulfur Cubes inhabit this dimension. Sniffers are rare visitors. Give unfamiliar creatures space until you know what they do."),
+                        page("ABANDONED LABS\n\nOld laboratories are hidden in the Overworld. Use /locate abandoned_lab to search for the nearest eligible site."),
+                        page("LAB NOTES\n\nThe scientist inside may be hostile. Prepare before entering, watch your surroundings, and bring supplies for the journey home."),
+                        page("FIELD ADVICE\n\nCarry protection, keep clear of acid pools, and note the route back to the portal. Careful explorers live to write the next page.")
+                ),
+                true
+        )));
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
-                                Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.literal("The Sulfur Dimension Field Guide"));
-        tooltip.accept(Component.literal("Blocks: Sulfur, Cinnabar, Potent Sulfur"));
-        tooltip.accept(Component.literal("Hazards: Acid Water and noxious gas"));
-        tooltip.accept(Component.literal("Protection: Respirator Helmet"));
-        tooltip.accept(Component.literal("Portal: 4x5 Sulfur frame + Flint and Steel"));
-        tooltip.accept(Component.literal("Mobs: Sulfur Cube"));
-        tooltip.accept(Component.literal("Find: abandoned Sulfur Labs in the Overworld"));
+    private static Filterable<Component> page(String text) {
+        return Filterable.passThrough(Component.literal(text));
     }
 }
