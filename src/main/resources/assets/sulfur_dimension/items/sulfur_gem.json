@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "sulfur_dimension:item/sulfur_gem"
+  }
+}
