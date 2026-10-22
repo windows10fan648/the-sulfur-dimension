@@ -1,1 +1,30 @@
-{"schemaVersion":1,"id":"sulfur_dimension","version":"${version}","name":"The Sulfur Dimension","description":"A toxic sulfur dimension using Minecraft 26.3 Sulfur Caves, Sulfur Cubes, sulfur blocks, geysers, and acid water.","authors":["The Sulfur Dimension contributors"],"license":"MIT","environment":"*","entrypoints":{"main":["com.sulfur.SulfurDimension"],"client":["com.sulfur.client.SulfurDimensionClient"]},"mixins":["sulfur_dimension.mixins.json"],"depends":{"fabricloader":">=0.19.5","minecraft":"~26.3","java":">=25","fabric-api":"*"}}
+{
+  "schemaVersion": 1,
+  "id": "sulfur_dimension",
+  "version": "${version}",
+  "name": "The Sulfur Dimension",
+  "description": "A toxic sulfur dimension using Minecraft 26.3 Sulfur Caves, Sulfur Cubes, sulfur blocks, geysers, and acid water.",
+  "authors": [
+    "The Sulfur Dimension contributors"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.sulfur.SulfurDimension"
+    ],
+    "client": [
+      "com.sulfur.client.SulfurDimensionClient"
+    ]
+  },
+  "mixins": [
+    "sulfur_dimension.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "icon": "assets/sulfur_dimension/icon.png"
+}
