@@ -18,6 +18,13 @@
               "weight": 10
             }
           ],
+          "creature": [
+            {
+              "type": "minecraft:sniffer",
+              "count": 1,
+              "weight": 3
+            }
+          ],
           "monster": [
             {
               "type": "minecraft:sulfur_cube",
@@ -92,7 +99,7 @@
     [
       "minecraft:lake_lava_underground",
       "minecraft:lake_lava_surface",
-      "minecraft:rooted_sulfur_spring",
+      "sulfur_dimension:rooted_sulfur_spring",
       "minecraft:sulfur_pool"
     ],
     [
