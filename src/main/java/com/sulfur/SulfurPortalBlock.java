@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 /** Custom yellow-green portal interior connecting the Overworld and Sulfur Dimension. */
 public final class SulfurPortalBlock extends Block {
-    private static final int SEARCH_RADIUS = 96;
+    private static final int SEARCH_RADIUS = 512;
 
     public SulfurPortalBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -39,7 +39,7 @@ public final class SulfurPortalBlock extends Block {
                 ensurePairedPortal(destination, landing);
                 TeleportTransition transition = new TeleportTransition(
                         destination,
-                        new Vec3(landing.getX() + 0.5, landing.getY() + 1.0, landing.getZ() + 0.5),
+                        new Vec3(landing.getX() + 0.5, landing.getY(), landing.getZ() + 0.5),
                         Vec3.ZERO,
                         entity.getYRot(), entity.getXRot(), TeleportTransition.DO_NOTHING);
                 Entity teleported = entity.teleport(transition);
@@ -77,41 +77,49 @@ public final class SulfurPortalBlock extends Block {
         }
     }
 
-    /** Prefer dry, sky-exposed land near the origin; never treat a cave roof as the surface. */
+    /** Find exposed sulfur terrain, searching outward and skipping water-covered columns. */
     private static BlockPos findSurface(ServerLevel level) {
         int centerX = 0;
         int centerZ = 0;
-        for (int radius = 0; radius <= SEARCH_RADIUS; radius += 8) {
-            for (int dx = -radius; dx <= radius; dx += 8) {
-                for (int dz = -radius; dz <= radius; dz += 8) {
+        BlockPos dryFallback = null;
+        for (int radius = 0; radius <= SEARCH_RADIUS; radius += 16) {
+            for (int dx = -radius; dx <= radius; dx += 16) {
+                for (int dz = -radius; dz <= radius; dz += 16) {
                     if (radius != 0 && Math.abs(dx) != radius && Math.abs(dz) != radius) continue;
                     int x = centerX + dx;
                     int z = centerZ + dz;
-                    // MOTION_BLOCKING_NO_LEAVES can report the top of an underground cave.
-                    // WORLD_SURFACE points at the actual topmost terrain instead.
                     int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
                     BlockPos ground = new BlockPos(x, y - 1, z);
                     BlockState floor = level.getBlockState(ground);
                     if (!floor.isAir() && floor.getFluidState().isEmpty() && !floor.is(SulfurDimension.ACID_WATER)
                             && level.canSeeSkyFromBelowWater(new BlockPos(x, y, z))
                             && clearLandingSpace(level, x, y, z)) {
-                        return new BlockPos(x, y, z);
+                        BlockPos candidate = new BlockPos(x, y, z);
+                        if (dryFallback == null) dryFallback = candidate;
+                        if (floor.is(Blocks.SULFUR)) return candidate;
                     }
                 }
             }
         }
-        // Guaranteed dry fallback for unusual custom worldgen with no accessible land nearby.
-        // Last resort: build a dry, open-air platform near the top of the build range.
-        BlockPos fallback = new BlockPos(centerX, level.getMaxY() - 16, centerZ);
+        // If generated terrain has no exposed sulfur, use the nearest dry surface we found and
+        // turn its landing pad into sulfur instead of dropping the player onto a distant sky platform.
+        if (dryFallback != null) return makeSulfurLandingPad(level, dryFallback);
+
+        // Fully flooded or unusual custom terrain: make a solid pad at the origin's surface level.
+        BlockPos fallback = new BlockPos(centerX, level.getHeight(Heightmap.Types.WORLD_SURFACE, centerX, centerZ), centerZ);
+        return makeSulfurLandingPad(level, fallback);
+    }
+
+    private static BlockPos makeSulfurLandingPad(ServerLevel level, BlockPos landing) {
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
-                level.setBlock(fallback.offset(dx, -1, dz), Blocks.SULFUR.defaultBlockState(), 2);
+                level.setBlock(landing.offset(dx, -1, dz), Blocks.SULFUR.defaultBlockState(), 2);
                 for (int dy = 0; dy < 3; dy++) {
-                    level.setBlock(fallback.offset(dx, dy, dz), Blocks.AIR.defaultBlockState(), 2);
+                    level.setBlock(landing.offset(dx, dy, dz), Blocks.AIR.defaultBlockState(), 2);
                 }
             }
         }
-        return fallback;
+        return landing;
     }
 
     private static boolean clearLandingSpace(ServerLevel level, int x, int y, int z) {
