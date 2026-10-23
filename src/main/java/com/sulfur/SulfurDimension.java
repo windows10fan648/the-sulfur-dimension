@@ -2,6 +2,7 @@ package com.sulfur;
 
 import java.util.Map;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -9,8 +10,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -155,6 +158,22 @@ public final class SulfurDimension implements ModInitializer {
     @Override
     public void onInitialize() {
         FabricDefaultAttributeRegistry.register(SULFURIZED_GHAST, net.minecraft.world.entity.monster.Ghast.createAttributes());
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                if (!player.level().dimension().equals(SULFUR_WORLD)
+                        || player.entityTags().contains("sulfur_dimension.field_guide_granted")) {
+                    continue;
+                }
+
+                if (!player.getInventory().contains(stack -> stack.is(SULFUR_FIELD_GUIDE))) {
+                    ItemStack guide = new ItemStack(SULFUR_FIELD_GUIDE);
+                    if (!player.addItem(guide)) {
+                        player.drop(guide, false, Prediction.SERVER_ONLY);
+                    }
+                }
+                player.addTag("sulfur_dimension.field_guide_granted");
+            }
+        });
         // Official minecraft:sulfur_caves supplies the Sulfur Cube and vanilla sulfur worldgen.
         SulfurPortal.register();
         SulfurLab.register();

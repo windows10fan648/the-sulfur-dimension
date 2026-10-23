@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "sulfur_dimension:sulfur_gem"
+    "sulfur_dimension:sulfur_gem",
+    "sulfur_dimension:sulfur_tear"
   ]
 }
