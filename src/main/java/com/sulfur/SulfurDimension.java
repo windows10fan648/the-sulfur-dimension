@@ -109,6 +109,8 @@ public final class SulfurDimension implements ModInitializer {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)));
     public static final Item SULFUR_GEM = registerItem("sulfur_gem", new Item(itemProperties("sulfur_gem")));
+    public static final Item SULFUR_TEAR = registerItem("sulfur_tear", new Item(itemProperties("sulfur_tear")));
+    public static final Item SULFUR_FIREBALL_ITEM = registerItem("sulfur_fireball", new Item(itemProperties("sulfur_fireball").stacksTo(1)));
     public static final Item SULFUR_FIELD_GUIDE = registerItem("sulfur_field_guide", new SulfurFieldGuideItem(itemProperties("sulfur_field_guide").stacksTo(1)));
     public static final Item ACID_WATER_BUCKET = registerItem("acid_water_bucket", new AcidWaterBucketItem(
             ACID_STILL,
@@ -164,6 +166,7 @@ public final class SulfurDimension implements ModInitializer {
                     output.accept(ACID_WATER);
                     output.accept(SULFUR_PORTAL);
                     output.accept(SULFUR_GEM);
+                    output.accept(SULFUR_TEAR);
                     output.accept(SULFUR_GEM_ORE);
                     output.accept(SULFUR_FIELD_GUIDE);
                     output.accept(ACID_WATER_BUCKET);

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sulfur_dimension:sulfur_tear"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "sulfur_dimension:entities/sulfurized_ghast"
+}

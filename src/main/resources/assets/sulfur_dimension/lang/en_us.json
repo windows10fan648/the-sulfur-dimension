@@ -13,5 +13,7 @@
   "item.sulfur_dimension.sulfur_chestplate": "Sulfur Chestplate",
   "item.sulfur_dimension.sulfur_leggings": "Sulfur Leggings",
   "item.sulfur_dimension.sulfur_boots": "Sulfur Boots",
-  "entity.sulfur_dimension.sulfurized_ghast": "Sulfurized Ghast"
+  "entity.sulfur_dimension.sulfurized_ghast": "Sulfurized Ghast",
+  "item.sulfur_dimension.sulfur_tear": "Sulfur Tear",
+  "item.sulfur_dimension.sulfur_fireball": "Sulfur Fireball"
 }
