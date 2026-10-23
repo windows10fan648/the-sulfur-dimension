@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Register abandoned labs as native world-generation structures, findable with `/locate structure sulfur_dimension:abandoned_lab`.
+- Add rare Acid Water pools to desert and badlands biomes, including desert-village terrain.
+
 ## 1.0.0 — Initial release
 
 A Fabric dimension mod built around Minecraft's Sulfur Caves content.
@@ -11,7 +16,7 @@ A Fabric dimension mod built around Minecraft's Sulfur Caves content.
 - Retains sulfur pools, springs, spikes, Sulfur Cubes, and Sulfur Caves ambience.
 - Adds rare natural Sniffer spawns in the dimension.
 - Adds acid water, a respirator helmet, sulfur utility items, and 21 advancements.
-- Adds abandoned laboratories in the Overworld, with a scientist boss; use `/locate abandoned_lab` from the Overworld to find one.
+- Adds abandoned laboratories in the Overworld, with a scientist boss; use `/locate structure sulfur_dimension:abandoned_lab` from the Overworld to find one.
 - Includes a brief sulfur-yellow portal-arrival tint and improved landing selection.
 
 ### Requirements

@@ -20,7 +20,7 @@ public final class SulfurFieldGuideItem extends WrittenBookItem {
                         page("TERRAIN\n\nSulfur and cinnabar shape the land. Look for sulfur pools, springs, spikes, and caves. The dimension's terrain is unlike the Overworld."),
                         page("HAZARDS\n\nAcid water is dangerous. Avoid swimming in it. Sulfur gas can harm the unprotected. Wear a Respirator Helmet while exploring hazardous areas."),
                         page("CREATURES\n\nSulfur Cubes inhabit this dimension. Sniffers are rare visitors. Give unfamiliar creatures space until you know what they do."),
-                        page("ABANDONED LABS\n\nOld laboratories are hidden in the Overworld. Use /locate abandoned_lab to search for the nearest eligible site."),
+                        page("ABANDONED LABS\n\nOld laboratories are hidden in the Overworld. Use /locate structure sulfur_dimension:abandoned_lab to find the nearest one."),
                         page("LAB NOTES\n\nThe scientist inside may be hostile. Prepare before entering, watch your surroundings, and bring supplies for the journey home."),
                         page("FIELD ADVICE\n\nCarry protection, keep clear of acid pools, and note the route back to the portal. Careful explorers live to write the next page.")
                 ),

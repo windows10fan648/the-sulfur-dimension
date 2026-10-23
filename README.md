@@ -26,7 +26,7 @@ Build a vertical sulfur-block portal frame with an outer size of 4 blocks wide b
 
 The dimension features sulfur and cinnabar terrain, sulfur pools and springs, sulfur spikes, Sulfur Cubes, and rare Sniffers. Avoid acid water and noxious sulfur gas; the Respirator Helmet helps protect against environmental effects.
 
-Abandoned laboratories generate as you explore the Overworld. Use `/locate abandoned_lab` while in the Overworld to find the nearest eligible lab. A scientist boss guards each lab.
+Abandoned laboratories generate as you explore the Overworld. Use `/locate structure sulfur_dimension:abandoned_lab` while in the Overworld to find one. A scientist boss guards each lab. Rare Acid Water pools can generate in deserts and badlands, including desert-village biomes.
 
 ## Highlights
 
@@ -34,8 +34,8 @@ Abandoned laboratories generate as you explore the Overworld. Use `/locate aband
 - Dimension-specific world generation excludes Overworld stone, dirt, tuff, and ore features; vanilla Overworld generation remains unchanged.
 - Sulfur springs are preserved with custom templates that replace tuff, stone, and granite with sulfur.
 - Rare natural Sniffer spawns, alongside vanilla Sulfur Caves creatures.
-- Acid water, respirator equipment, utility items, and 21 advancements.
-- Abandoned laboratories, a locate command, and the scientist boss.
+- Flowing Acid Water, rare desert and badlands pools, respirator equipment, utility items, and 21 advancements.
+- Abandoned laboratories registered as native structures for `/locate structure`, with the scientist boss.
 - Sulfur-yellow portal-arrival tint and surface-aware portal landings.
 
 ## Build from source

@@ -123,6 +123,7 @@ public final class SulfurDimension implements ModInitializer {
         // Official minecraft:sulfur_caves supplies the Sulfur Cube and vanilla sulfur worldgen.
         SulfurPortal.register();
         SulfurLab.register();
+        AcidWaterWorldgen.register();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id("main"), CreativeModeTab.builder(CreativeModeTab.Row.TOP, 7)
                 .title(Component.translatable("itemGroup.sulfur_dimension.main"))
                 .icon(() -> new ItemStack(SULFUR_GEM))

@@ -1,0 +1,64 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:sulfur",
+          "modifier": {"type": "minecraft:set_count", "count": 16}
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cinnabar",
+          "modifier": {"type": "minecraft:set_count", "count": 4}
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "minecraft:flint_and_steel"}]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_ingot",
+          "modifier": {"type": "minecraft:set_count", "count": 3}
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bread",
+          "modifier": {"type": "minecraft:set_count", "count": 3}
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sulfur_dimension:sulfur_gem",
+          "modifier": {"type": "minecraft:set_count", "count": 2}
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "sulfur_dimension:respirator_helmet"}]
+    }
+  ],
+  "random_sequence": "sulfur_dimension:chests/abandoned_lab"
+}
