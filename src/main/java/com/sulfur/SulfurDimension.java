@@ -2,7 +2,7 @@ package com.sulfur;
 
 import java.util.Map;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,6 +38,7 @@ import net.minecraft.world.level.material.MapColor;
 /** The Sulfur Dimension. Vanilla 26.3 sulfur content is intentionally reused. */
 public final class SulfurDimension implements ModInitializer {
     public static final String MOD_ID = "sulfur_dimension";
+    private static final String FIELD_GUIDE_GRANTED_TAG = "sulfur_dimension.field_guide_granted";
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
@@ -155,25 +156,22 @@ public final class SulfurDimension implements ModInitializer {
         return Registry.register(BuiltInRegistries.ITEM, id(name), item);
     }
 
+    private static void giveStartingFieldGuide(ServerPlayer player) {
+        if (player.entityTags().contains(FIELD_GUIDE_GRANTED_TAG)) return;
+
+        if (!player.getInventory().contains(stack -> stack.is(SULFUR_FIELD_GUIDE))) {
+            ItemStack guide = new ItemStack(SULFUR_FIELD_GUIDE);
+            if (!player.addItem(guide)) {
+                player.drop(guide, false, Prediction.SERVER_ONLY);
+            }
+        }
+        player.addTag(FIELD_GUIDE_GRANTED_TAG);
+    }
+
     @Override
     public void onInitialize() {
         FabricDefaultAttributeRegistry.register(SULFURIZED_GHAST, net.minecraft.world.entity.monster.Ghast.createAttributes());
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                if (!player.level().dimension().equals(SULFUR_WORLD)
-                        || player.entityTags().contains("sulfur_dimension.field_guide_granted")) {
-                    continue;
-                }
-
-                if (!player.getInventory().contains(stack -> stack.is(SULFUR_FIELD_GUIDE))) {
-                    ItemStack guide = new ItemStack(SULFUR_FIELD_GUIDE);
-                    if (!player.addItem(guide)) {
-                        player.drop(guide, false, Prediction.SERVER_ONLY);
-                    }
-                }
-                player.addTag("sulfur_dimension.field_guide_granted");
-            }
-        });
+        ServerPlayerEvents.JOIN.register(SulfurDimension::giveStartingFieldGuide);
         // Official minecraft:sulfur_caves supplies the Sulfur Cube and vanilla sulfur worldgen.
         SulfurPortal.register();
         SulfurLab.register();
