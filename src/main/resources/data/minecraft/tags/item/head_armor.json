@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "sulfur_dimension:respirator_helmet"
+    "sulfur_dimension:respirator_helmet",
+    "sulfur_dimension:sulfur_helmet"
   ]
 }

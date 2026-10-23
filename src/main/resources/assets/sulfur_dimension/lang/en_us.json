@@ -1,13 +1,17 @@
 {
   "block.sulfur_dimension.acid_water": "Acid Water",
-  "block.sulfur_dimension.sulfur_portal": "Sulfur Portal",
-  "itemGroup.sulfur_dimension.main": "The Sulfur Dimension",
   "block.sulfur_dimension.sulfur_portal": "Sulfur Dimension Portal",
+  "itemGroup.sulfur_dimension.main": "The Sulfur Dimension",
   "item.sulfur_dimension.sulfur_gem": "Sulfur Gem",
   "block.sulfur_dimension.sulfur_gem_ore": "Sulfur Gem Ore",
   "item.sulfur_dimension.sulfur_field_guide": "Sulfur Field Guide",
   "item.sulfur_dimension.acid_water_bucket": "Acid Water Bucket",
   "item.sulfur_dimension.respirator_helmet": "Respirator Helmet",
   "block.sulfur_dimension.polished_cinnabar": "Polished Cinnabar",
-  "block.sulfur_dimension.chiseled_cinnabar": "Chiseled Cinnabar"
+  "block.sulfur_dimension.chiseled_cinnabar": "Chiseled Cinnabar",
+  "item.sulfur_dimension.sulfur_helmet": "Sulfur Helmet",
+  "item.sulfur_dimension.sulfur_chestplate": "Sulfur Chestplate",
+  "item.sulfur_dimension.sulfur_leggings": "Sulfur Leggings",
+  "item.sulfur_dimension.sulfur_boots": "Sulfur Boots",
+  "entity.sulfur_dimension.sulfurized_ghast": "Sulfurized Ghast"
 }

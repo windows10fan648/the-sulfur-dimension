@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "sulfur_dimension:sulfur_armor"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "sulfur_dimension:sulfur_armor_leggings"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "sulfur_dimension:sulfur_armor"
+      }
+    ]
+  }
+}

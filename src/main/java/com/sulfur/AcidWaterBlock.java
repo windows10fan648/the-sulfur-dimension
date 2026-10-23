@@ -18,11 +18,18 @@ public final class AcidWaterBlock extends LiquidBlock {
         super(fluid, properties);
     }
 
+    private static boolean hasFullSulfurArmor(Player player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(SulfurDimension.SULFUR_HELMET)
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(SulfurDimension.SULFUR_CHESTPLATE)
+                && player.getItemBySlot(EquipmentSlot.LEGS).is(SulfurDimension.SULFUR_LEGGINGS)
+                && player.getItemBySlot(EquipmentSlot.FEET).is(SulfurDimension.SULFUR_BOOTS);
+    }
+
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
                              InsideBlockEffectApplier effects, boolean suffocates) {
         if (!level.isClientSide() && entity instanceof Player player && !player.isCreative()
-                && level.getGameTime() % 20L == 0L) {
+                && level.getGameTime() % 20L == 0L && !hasFullSulfurArmor(player)) {
             player.hurt(level.damageSources().magic(), 2.0f);
             if (!player.getItemBySlot(EquipmentSlot.HEAD).is(SulfurDimension.RESPIRATOR_HELMET)) {
                 player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100, 0));

@@ -2,6 +2,7 @@ package com.sulfur;
 
 import java.util.Map;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +12,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -39,7 +42,9 @@ public final class SulfurDimension implements ModInitializer {
 
     public static final ResourceKey<Level> SULFUR_WORLD = ResourceKey.create(Registries.DIMENSION, id("sulfur"));
     private static final ResourceKey<EquipmentAsset> RESPIRATOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, id("respirator"));
+    private static final ResourceKey<EquipmentAsset> SULFUR_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, id("sulfur_armor"));
     private static final int RESPIRATOR_BASE_DURABILITY = 15;
+    private static final int SULFUR_ARMOR_BASE_DURABILITY = 33;
     private static final ArmorMaterial RESPIRATOR_ARMOR = new ArmorMaterial(
             RESPIRATOR_BASE_DURABILITY,
             Map.of(ArmorType.HELMET, 1),
@@ -49,6 +54,16 @@ public final class SulfurDimension implements ModInitializer {
             0.0F,
             ItemTags.REPAIRS_IRON_ARMOR,
             RESPIRATOR_ASSET
+    );
+    private static final ArmorMaterial SULFUR_ARMOR = new ArmorMaterial(
+            SULFUR_ARMOR_BASE_DURABILITY,
+            Map.of(ArmorType.HELMET, 3, ArmorType.CHESTPLATE, 8, ArmorType.LEGGINGS, 6, ArmorType.BOOTS, 3),
+            12,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            2.0F,
+            0.1F,
+            net.minecraft.tags.TagKey.create(Registries.ITEM, id("sulfur_armor_repairs")),
+            SULFUR_ARMOR_ASSET
     );
 
     private static ResourceKey<Block> blockKey(String name) {
@@ -68,6 +83,12 @@ public final class SulfurDimension implements ModInitializer {
 
     private static Item.Properties itemProperties(String name) {
         return new Item.Properties().setId(itemKey(name));
+    }
+
+    private static Item sulfurArmorItem(String name, ArmorType type) {
+        return registerItem(name, new Item(itemProperties(name)
+                .humanoidArmor(SULFUR_ARMOR, type)
+                .durability(type.getDurability(SULFUR_ARMOR_BASE_DURABILITY))));
     }
 
     public static final FlowingFluid ACID_STILL = registerFluid("acid_water", new AcidFluid.Source());
@@ -96,6 +117,17 @@ public final class SulfurDimension implements ModInitializer {
             itemProperties("respirator_helmet")
                     .humanoidArmor(RESPIRATOR_ARMOR, ArmorType.HELMET)
                     .durability(ArmorType.HELMET.getDurability(RESPIRATOR_BASE_DURABILITY))));
+    public static final Item SULFUR_HELMET = sulfurArmorItem("sulfur_helmet", ArmorType.HELMET);
+    public static final Item SULFUR_CHESTPLATE = sulfurArmorItem("sulfur_chestplate", ArmorType.CHESTPLATE);
+    public static final Item SULFUR_LEGGINGS = sulfurArmorItem("sulfur_leggings", ArmorType.LEGGINGS);
+    public static final Item SULFUR_BOOTS = sulfurArmorItem("sulfur_boots", ArmorType.BOOTS);
+    public static final EntityType<SulfurizedGhast> SULFURIZED_GHAST = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            id("sulfurized_ghast"),
+            EntityType.Builder.of(SulfurizedGhast::new, MobCategory.MONSTER)
+                    .sized(4.0F, 4.0F)
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id("sulfurized_ghast"))));
     public static final ResourceKey<CreativeModeTab> SULFUR_TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, id("main"));
 
     private static <T extends Fluid> T registerFluid(String name, T fluid) {
@@ -120,6 +152,7 @@ public final class SulfurDimension implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        FabricDefaultAttributeRegistry.register(SULFURIZED_GHAST, net.minecraft.world.entity.monster.Ghast.createAttributes());
         // Official minecraft:sulfur_caves supplies the Sulfur Cube and vanilla sulfur worldgen.
         SulfurPortal.register();
         SulfurLab.register();
@@ -135,6 +168,10 @@ public final class SulfurDimension implements ModInitializer {
                     output.accept(SULFUR_FIELD_GUIDE);
                     output.accept(ACID_WATER_BUCKET);
                     output.accept(RESPIRATOR_HELMET);
+                    output.accept(SULFUR_HELMET);
+                    output.accept(SULFUR_CHESTPLATE);
+                    output.accept(SULFUR_LEGGINGS);
+                    output.accept(SULFUR_BOOTS);
                 })
                 .build());
     }

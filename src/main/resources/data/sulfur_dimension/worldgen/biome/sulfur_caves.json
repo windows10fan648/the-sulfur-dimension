@@ -36,6 +36,15 @@
               "weight": 100
             },
             {
+              "type": "sulfur_dimension:sulfurized_ghast",
+              "count": {
+                "type": "minecraft:uniform",
+                "min_inclusive": 1,
+                "max_inclusive": 1
+              },
+              "weight": 8
+            },
+            {
               "type": "minecraft:creeper",
               "count": 2,
               "weight": 50
