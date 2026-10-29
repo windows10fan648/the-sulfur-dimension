@@ -29,7 +29,8 @@ final class PortalSearchPolicy {
     static List<ColumnOffset> columnsWithinChunk(int anchorX, int anchorZ) {
         List<ColumnOffset> columns = new ArrayList<>(9);
         columns.add(new ColumnOffset(anchorX, anchorZ));
-        columns.add(new ColumnOffset(8, 8));
+        ColumnOffset center = new ColumnOffset(8, 8);
+        if (!columns.contains(center)) columns.add(center);
         for (int x : new int[] {4, 8, 12}) {
             for (int z : new int[] {4, 8, 12}) {
                 ColumnOffset column = new ColumnOffset(x, z);
