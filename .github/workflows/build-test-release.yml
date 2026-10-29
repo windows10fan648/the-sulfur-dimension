@@ -49,7 +49,7 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             asset_name="the-sulfur-dimension-${GITHUB_REF_NAME}.jar"
           else
-            asset_name="the-sulfur-dimension-main-latest.jar"
+            asset_name="the-sulfur-dimension-1.0.0.jar"
           fi
           cp "$jar_path" "build/release-assets/$asset_name"
 
@@ -85,7 +85,7 @@ jobs:
         shell: bash
         run: |
           while IFS= read -r asset_name; do
-            if [[ "$asset_name" != "the-sulfur-dimension-main-latest.jar" ]]; then
+            if [[ "$asset_name" != "the-sulfur-dimension-1.0.0.jar" ]]; then
               gh release delete-asset main-latest "$asset_name" --repo "$GITHUB_REPOSITORY" --yes
             fi
           done < <(gh release view main-latest --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
