@@ -37,6 +37,22 @@ jobs:
             bash ./gradlew clean build --no-configuration-cache
           fi
 
+      - name: Prepare binary release JAR
+        shell: bash
+        run: |
+          mkdir -p build/release-assets
+          jar_path="$(find build/libs -maxdepth 1 -type f -name 'the-sulfur-dimension-*.jar' ! -name '*-sources.jar' -print -quit)"
+          if [[ -z "$jar_path" ]]; then
+            echo "No binary mod JAR found in build/libs" >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            asset_name="the-sulfur-dimension-${GITHUB_REF_NAME}.jar"
+          else
+            asset_name="the-sulfur-dimension-main-latest.jar"
+          fi
+          cp "$jar_path" "build/release-assets/$asset_name"
+
       - name: Update rolling main prerelease tag
         if: github.ref == 'refs/heads/main'
         run: |
@@ -48,9 +64,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: |
-            build/libs/the-sulfur-dimension-*.jar
-            !build/libs/*-sources.jar
+          files: build/release-assets/*.jar
 
       - name: Publish JAR to rolling main prerelease
         if: github.ref == 'refs/heads/main'
@@ -62,6 +76,16 @@ jobs:
           make_latest: false
           overwrite_files: true
           generate_release_notes: false
-          files: |
-            build/libs/the-sulfur-dimension-*.jar
-            !build/libs/*-sources.jar
+          files: build/release-assets/*.jar
+
+      - name: Remove obsolete rolling prerelease assets
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          while IFS= read -r asset_name; do
+            if [[ "$asset_name" != "the-sulfur-dimension-main-latest.jar" ]]; then
+              gh release delete-asset main-latest "$asset_name" --repo "$GITHUB_REPOSITORY" --yes
+            fi
+          done < <(gh release view main-latest --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
