@@ -2,6 +2,7 @@ package com.sulfur;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /** Pure search rules shared by the portal implementation and unit tests. */
 final class PortalSearchPolicy {
@@ -24,10 +25,34 @@ final class PortalSearchPolicy {
         return List.copyOf(offsets);
     }
 
+    /** Nine interior sample columns, center first, all remaining within the loaded chunk. */
+    static List<ColumnOffset> columnsWithinChunk(int anchorX, int anchorZ) {
+        List<ColumnOffset> columns = new ArrayList<>(9);
+        columns.add(new ColumnOffset(anchorX, anchorZ));
+        columns.add(new ColumnOffset(8, 8));
+        for (int x : new int[] {4, 8, 12}) {
+            for (int z : new int[] {4, 8, 12}) {
+                ColumnOffset column = new ColumnOffset(x, z);
+                if (columns.size() < 9 && !columns.contains(column)) columns.add(column);
+            }
+        }
+        return List.copyOf(columns);
+    }
+
     /** Sulfur preference applies only on entry; an ordinary safe surface is always accepted otherwise. */
     static boolean isPreferred(boolean preferSulfur, boolean sulfurSurface) {
         return !preferSulfur || sulfurSurface;
     }
 
+    /** All inputs are already safe; return the first preferred candidate or a safe fallback. */
+    static <T> T selectCandidate(List<T> safeCandidates, Predicate<T> preferred) {
+        if (safeCandidates.isEmpty()) return null;
+        for (T candidate : safeCandidates) {
+            if (preferred.test(candidate)) return candidate;
+        }
+        return safeCandidates.getFirst();
+    }
+
     record ChunkOffset(int x, int z) {}
+    record ColumnOffset(int x, int z) {}
 }
